@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Bulma : pour créer efficacement des interface Web -->
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bulma@0.8.0/css/bulma.min.css">
+    <!-- Style de l'applicaiton -->
+    <link rel="stylesheet" href="css/styles.css"/>
+
+    <!-- Font Awesome : polices et pack d'icônes très populaire -->
+    <script defer
+            src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
+
+    <title>Top Citations</title>
+</head>
+
+<body>
+<!-- DIV #app qui contiendra notre application Vue -->
+<div id="app" class="container">
+    <section class="section">
+
+        <taches-form v-on:envoyer="ajouterTache"></taches-form>
+
+        <taches-liste :taches="tachesEnCours"
+                      :couleur="'#00d1b2'"
+                      v-on:supprimer-tache="supprimerTache"
+        ></taches-liste>
+
+
+        <taches-liste :taches="tachesTerminees"
+                      :titre="'Tâches terminée'"
+                      v-on:supprimer-tache="supprimerTache"
+        ></taches-liste>
+
+    </section>
+
+</div><!-- #app -->
+
+<!-- Vue.js -->
+<script src="https://unpkg.com/vue"></script>
+<!-- Tableau d'objets représentant les articles -->
+<script src="js/taches.js"></script>
+<!-- Code JS de l'application | C'est ici qu'il faut créer l'objet Vue -->
+<script src="js/main.js"></script>
+</body>
+
+</html>
