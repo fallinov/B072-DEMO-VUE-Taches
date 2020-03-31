@@ -1,4 +1,5 @@
 let TachesDetail = Vue.component('taches-tache', {
+  // Propriétés (permettent au parent de passer des données) Parent => Fils
   props: {
     tache: {
       type: Object,
@@ -6,9 +7,19 @@ let TachesDetail = Vue.component('taches-tache', {
     }
   },
   methods: {
+    /**
+     * Inverse le status de la tâche (en cours / terminée)
+     */
     toggle: function () {
       this.tache.terminee = !this.tache.terminee
     },
+    /**
+     * Emmet un événment "bouton-supprimer" avec l'id de la tâche en paramètre
+     *
+     * Permet de communiquer avec le parent. Fils => Parent
+     * Le parent va écouter l'événement du fils :
+     *     <taches-tache v-on:bouton-supprimer="nomMéthode" />
+     */
     supprimer: function () {
       this.$emit('bouton-supprimer', this.tache.id)
     }
@@ -25,9 +36,11 @@ let TachesDetail = Vue.component('taches-tache', {
 });
 
 let TachesListe = Vue.component('taches-liste', {
+  // Composants utilisés par TachesListe
   components: {
     TachesDetail
   },
+  // Propriétés (permettent au parent de passer des données) Parent => Fils
   props: {
     titre: {
       type: String,
@@ -43,6 +56,14 @@ let TachesListe = Vue.component('taches-liste', {
     },
   },
   methods: {
+    /**
+     * Emmet un événment "supprimer-tache" avec id de la tâche en paramètre
+     *
+     * Permet de communiquer avec le parent. Fils => Parent
+     * Le parent va écouter l'événement du fils :
+     *     <taches-liste v-on:supprimer-tache="nomMéthode" />
+     * @param idTache {Number}
+     */
     supprimerTache: function (idTache) {
       this.$emit('supprimer-tache', idTache)
     }
@@ -62,19 +83,30 @@ let TachesListe = Vue.component('taches-liste', {
 });
 
 let TachesForm = Vue.component('taches-form', {
+  // Dans les composants, les données sont retournées via une fonction.
   data: function () {
     return {
         nom: ''
     }
   },
   methods: {
+    /**
+     * Emmet un événement "envoyer" avec le nom de la tâche en paramètre
+     * et réinitialise le formulaire
+     *
+     * Permet de communiquer avec le parent. Fils => Parent
+     * Le parent va écouter l'événement du fils :
+     *     <taches-form v-on:envoyer="nomMéthode" />
+     */
     envoyer: function () {
       this.$emit('envoyer', this.nom )
+      this.nom = ''
     }
   },
   template: `<div class="field has-addons">
                 <div class="control">
-                    <input v-model="nom" 
+                    <input  v-model="nom"
+                            @keyup.enter="envoyer"
                             class="input"
                             type="text"
                             placeholder="Saisir une tâche" />
@@ -89,13 +121,39 @@ let TachesForm = Vue.component('taches-form', {
 
 let app = new Vue({
   el: "#app",
+  // Composants utilisés par app
   components: {
     TachesListe, TachesForm
   },
   data: {
-    taches: Data.taches
+    taches: [
+      {
+        id: 1,
+        nom: 'Acheter du pain',
+        terminee: false
+      },
+      {
+        id: 2,
+        nom: 'Nettoyer le frigo',
+        terminee: false
+      },
+      {
+        id: 3,
+        nom: 'Faire tuto Vue Mastery',
+        terminee: true
+      },
+      {
+        id: 4,
+        nom: 'Envoyer des fleurs',
+        terminee: false
+      }
+    ]
   },
   methods: {
+    /**
+     * Génère un nouvel id à partir de l'id actule le plus grand (max)
+     * @returns {Number}
+     */
     genererId: function () {
       let max = 0;
       for(let tache of this.taches) {
@@ -105,11 +163,19 @@ let app = new Vue({
       }
       return max + 1;
     },
+    /**
+     * Créer une nouvelle tâche à partir du nom passé en paramètre
+     * et l'ajoute au tableau des tâches
+     * @param nom {String} - Nom de la nouvelle tâche
+     */
     ajouterTache: function (nom) {
-      let tache = {};
-      tache.id = this.genererId();
-      tache.nom = nom;
-      tache.terminee = false;
+      // Création d'une nouvelle tâche
+      let tache = {
+        id: this.genererId(),
+        nom: nom,
+        terminee: false
+      };
+      // Ajout de la nouvelle tâche à la fin du tableau des tâches
       this.taches.push(tache);
     },
     supprimerTache: function (idTache) {
@@ -117,16 +183,35 @@ let app = new Vue({
     }
   },
   computed: {
+    /**
+     * Retourne le tableau des tâches triées par nom ASC
+     * @returns {Array}
+     */
     triTachesNom: function () {
-      return this.taches.sort((a, b) => {
-        return b.nom - a.nom;
-      });
+      /*return this.taches.sort((a, b) => {
+        return b.nom < a.nom;
+      });*/
+      // Trie les tâches par nom en prenant en compte la langue française
+      // Résoud le problème du tri des accents
+      return this.taches.sort((a, b) => a.nom.localeCompare(b.nom, 'fr'))
     },
+    /**
+     * Retourne le tableau des tâches en cours triées par nom ASC
+     * @returns {Array}
+     */
     tachesEnCours: function () {
-      return this.triTachesNom.filter( el => el.terminee === false);
+      // Filtre le tableau des tâches triées par nom.
+      // Ne garde que les tâches en cours (non terminées)
+      return this.triTachesNom.filter( tache => tache.terminee === false);
     },
+    /**
+     * Retourne le tableau des tâches terminées triées par nom ASC
+     * @returns {Array}
+     */
     tachesTerminees: function () {
-      return this.triTachesNom.filter( el => el.terminee === true);
+      // Filtre le tableau des tâches triées par nom.
+      // Ne garde que les tâches terminées
+      return this.triTachesNom.filter( tache => tache.terminee === true);
     }
   },
 });

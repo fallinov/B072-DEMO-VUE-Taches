@@ -5,35 +5,82 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- Bulma : pour créer efficacement des interface Web -->
-    <link rel="stylesheet"
-          href="https://cdn.jsdelivr.net/npm/bulma@0.8.0/css/bulma.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.8.0/css/bulma.min.css">
     <!-- Style de l'applicaiton -->
     <link rel="stylesheet" href="css/styles.css"/>
-
     <!-- Font Awesome : polices et pack d'icônes très populaire -->
-    <script defer
-            src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
-
-    <title>Top Citations</title>
+    <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
+    <title>Mes Tâches</title>
 </head>
 
 <body>
-<!-- DIV #app qui contiendra notre application Vue -->
+<!-- DIV #app QUI CONTIENDRA L'APPLICATION VUE -->
 <div id="app" class="container">
+
     <section class="section">
 
-        <taches-form v-on:envoyer="ajouterTache"></taches-form>
+        <!-- FORMULAIRE D'AJOUT D'UNE TÂCHE -->
+        <div class="field has-addons">
+            <div class="control">
+                <input v-model="nomNouvelleTache"
+                       @keyup.enter="ajouterTache"
+                       class="input"
+                       type="text"
+                       placeholder="Saisir une tâche" />
+            </div>
+            <div class="control">
+                <a @click="ajouterTache"
+                   class="button is-primary has-text-weight-bold">
+                    Ajouter
+                </a>
+            </div>
+        </div>
 
-        <taches-liste :taches="tachesEnCours"
-                      :couleur="'#00d1b2'"
-                      v-on:supprimer-tache="supprimerTache"
-        ></taches-liste>
+        <!-- LISTE DES TÂCHES EN COURS -->
+        <article class="panel" >
+            <p style="background-color: #00d1b2" class="panel-heading">
+                Tâches en cours ({{ tachesEnCours.length }})
+            </p>
 
+            <a  v-for="tache in tachesEnCours"
+                :key="tache.id"
+                :tache="tache"
+                @click="toggleTache(tache)"
+                class="panel-block"
+            >
+                <div>{{ tache.nom }}</div>
 
-        <taches-liste :taches="tachesTerminees"
-                      :titre="'Tâches terminée'"
-                      v-on:supprimer-tache="supprimerTache"
-        ></taches-liste>
+                <button @click="supprimerTache(tache.id)"
+                        class="button is-danger is-outlined">
+                    <span class="icon is-small">
+                       <i class="far fa-trash-alt"></i>
+                    </span>
+                </button>
+            </a>
+        </article>
+
+        <!-- LISTE DES TÂCHES TERMINEES -->
+        <article class="panel" >
+            <p style="background-color: #ededed" class="panel-heading">
+                Tâches terminées ({{ tachesTerminees.length }})
+            </p>
+
+            <a  v-for="tache in tachesTerminees"
+                :key="tache.id"
+                :tache="tache"
+                @click="toggleTache(tache)"
+                class="panel-block"
+            >
+                <div>{{ tache.nom }}</div>
+
+                <button @click="supprimerTache(tache.id)"
+                        class="button is-danger is-outlined">
+                    <span class="icon is-small">
+                       <i class="far fa-trash-alt"></i>
+                    </span>
+                </button>
+            </a>
+        </article>
 
     </section>
 
@@ -41,10 +88,7 @@
 
 <!-- Vue.js -->
 <script src="https://unpkg.com/vue"></script>
-<!-- Tableau d'objets représentant les articles -->
-<script src="js/taches.js"></script>
 <!-- Code JS de l'application | C'est ici qu'il faut créer l'objet Vue -->
 <script src="js/main.js"></script>
 </body>
-
 </html>
