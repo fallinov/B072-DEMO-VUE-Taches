@@ -25,13 +25,14 @@
         <taches-form v-on:envoyer="ajouterTache"></taches-form>
 
         <taches-liste :taches="tachesEnCours"
+                      :titre="'Tâches en cours'"
                       :couleur="'#00d1b2'"
                       v-on:supprimer-tache="supprimerTache"
         ></taches-liste>
 
 
         <taches-liste :taches="tachesTerminees"
-                      :titre="'Tâches terminée'"
+                      :titre="'Tâches terminées'"
                       v-on:supprimer-tache="supprimerTache"
         ></taches-liste>
 
